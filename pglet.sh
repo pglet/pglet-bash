@@ -156,17 +156,30 @@ function pglet_send() {
     fi
 }
 
-function pglet_event() {
+function pglet_wait_event() {
+    if [[ "$1" != "" ]]; then
+        local conn_id=$1
+    else
+        local conn_id=$PGLET_CONNECTION_ID
+    fi
+
+    read PGLET_EVENT_TARGET PGLET_EVENT_NAME PGLET_EVENT_DATA < "$conn_id.events"
+}
+
+function pglet_dispatch_events() {
   # https://askubuntu.com/questions/992439/bash-pass-both-array-and-non-array-parameter-to-function
+
+  #echo "count: $#"
+
   arr=("$@")
   IFS=' '
   while true
   do
-    read eventTarget eventName eventData < "$page_pipe.events"
+    pglet_wait_event
     for evt in "${arr[@]}";
     do
       IFS=' ' read -r et en fn <<< "$evt"
-      if [[ "$eventTarget" == "$et" && "$eventName" == "$en" ]]; then
+      if [[ "$PGLET_EVENT_TARGET" == "$et" && "$PGLET_EVENT_NAME" == "$en" ]]; then
         eval "$fn"
         return
       fi      
