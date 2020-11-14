@@ -133,6 +133,60 @@ function pglet_page() {
     echo "Page URL: $PGLET_PAGE_URL"
 }
 
+function pglet_start_session() {
+    echo "Started session: $1"
+    PGLET_CONNECTION_ID=$1
+    local fn=$2
+
+    eval "$fn"
+}
+
+function pglet_app() {
+    local pargs=(app)
+
+    if [[ $# -eq 1 ]]; then
+        # only hander function specified
+        local fn=$1
+    elif [[ $# -eq 2 ]]; then
+        # page name and hander function specified
+        pargs+=($1)
+        local fn=$2
+    else
+        echo "Error: wrong number of arguments"
+        exit 1
+    fi
+
+    if [[ "$PGLET_PUBLIC" == "true" ]]; then
+        pargs+=(--public)
+    fi
+
+    if [[ "$PGLET_PRIVATE" == "true" ]]; then
+        pargs+=(--private)
+    fi
+
+    if [[ "$PGLET_SERVER" != "" ]]; then
+        pargs+=(--server $PGLET_SERVER)
+    fi
+
+    if [[ "$PGLET_TOKEN" != "" ]]; then
+        pargs+=(--token $PGLET_TOKEN)
+    fi
+
+    # reset vars
+    PGLET_PAGE_URL=""
+
+    # execute pglet
+    while read -r session_id
+    do
+        if [[ "$PGLET_PAGE_URL" == "" ]]; then
+            PGLET_PAGE_URL="$session_id"
+            echo "Page URL: $PGLET_PAGE_URL"
+        else
+            pglet_start_session $session_id $fn &
+        fi
+    done < <( $PGLET_EXE "${pargs[@]}" )
+}
+
 function pglet_send() {
     if [[ $# -eq 1 ]]; then
         local conn_id=$PGLET_CONNECTION_ID
