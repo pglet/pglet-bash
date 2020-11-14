@@ -4,7 +4,8 @@ PGLET_VER="0.1.5"        # Minimum version required by this script
 # Default session variables:
 PGLET_EXE=""             # full path to Pglet executable
 PGLET_CONNECTION_ID=""   # the last page connection ID.
-PGLET_CONTROL_ID=""      # the last added control ID.
+PGLET_PAGE_URL=""        # the last page URL.
+PGLET_LAST_RESULT=""     # the last added control ID.
 PGLET_EVENT_TARGET=""    # the last received event target (control ID).
 PGLET_EVENT_NAME=""      # the last received event name.
 PGLET_EVENT_DATA=""      # the last received event data.
@@ -94,13 +95,65 @@ function pglet_install() {
     fi
 }
 
-function pglet() {
+# Parameters:
+#   $1 - page name
+# Variables:
+#   PGLET_PUBLIC      - makes the page available as public at pglet.io service or a self-hosted Pglet server
+#   PGLET_PRIVATE     - makes the page available as private at pglet.io service or a self-hosted Pglet server
+#   PGLET_SERVER      - connects to the page on a self-hosted Pglet server
+#   PGLET_TOKEN       - authentication token for pglet.io service or a self-hosted Pglet server
+
+function pglet_page() {
+    local pargs=(page)
+
+    if [[ "$1" != "" ]]; then
+        pargs+=($1)
+    fi
+
+    if [[ "$PGLET_PUBLIC" == "true" ]]; then
+        pargs+=(--public)
+    fi
+
+    if [[ "$PGLET_PRIVATE" == "true" ]]; then
+        pargs+=(--private)
+    fi
+
+    if [[ "$PGLET_SERVER" != "" ]]; then
+        pargs+=(--server $PGLET_SERVER)
+    fi
+
+    if [[ "$PGLET_TOKEN" != "" ]]; then
+        pargs+=(--token $PGLET_TOKEN)
+    fi
+
+    # execute pglet and get page connection ID
+    local page_results=`$PGLET_EXE "${pargs[@]}"`
+    IFS=' ' read -r PGLET_CONNECTION_ID PGLET_PAGE_URL <<< "$page_results"
+
+    echo "Page URL: $PGLET_PAGE_URL"
+}
+
+function pglet_send() {
+    if [[ $# -eq 1 ]]; then
+        local conn_id=$PGLET_CONNECTION_ID
+        local cmd=$1
+    elif [[ $# -eq 2 ]]; then
+        local conn_id=$1
+        local cmd=$2
+    else
+        echo "Error: wrong number of arguments"
+        exit 1
+    fi
+
     # send command
-    echo "$1" > "$page_pipe"
+    echo "$cmd" > "$conn_id"
 
     # read result
-    IFS=' ' read result_status result_value < "$page_pipe"
-    echo $result_value
+    IFS=' ' read result_status result_value < "$conn_id"
+    if [[ "$result_status" == "error" ]]; then
+        echo "Error: $result_value"
+        exit 2
+    fi
 }
 
 function pglet_event() {
@@ -121,3 +174,5 @@ function pglet_event() {
     done
   done
 }
+
+pglet_install
