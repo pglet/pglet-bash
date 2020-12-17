@@ -210,6 +210,11 @@ function pglet_send() {
     # send command
     echo "$cmd" > "$conn_id"
 
+    # take result if command doesn't end with "f" (fire-and-forget)
+    if [[ "$cmd" =~ \s*\w*f ]]; then
+        return
+    fi
+
     # read result
     local firstLine="true"
     local result_value=""
