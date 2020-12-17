@@ -1,5 +1,5 @@
 # Constants
-PGLET_VER="0.1.10"        # Minimum version required by this script
+PGLET_VER="0.1.10"        # Pglet version required by this script
 
 # Default session variables:
 PGLET_EXE=""             # full path to Pglet executable
@@ -9,64 +9,10 @@ PGLET_EVENT_TARGET=""    # the last received event target (control ID).
 PGLET_EVENT_NAME=""      # the last received event name.
 PGLET_EVENT_DATA=""      # the last received event data.
 
-function pglet_install() {
-    if [ "$(uname -m)" != "x86_64" ]; then
-        echo "Error: Unsupported architecture $(uname -m). Only x64 binaries are available." 1>&2
-        exit 1
-    fi
-
-    if [ "$OS" = "Windows_NT" ]; then
-        echo "Error: Bash for Windows is not supported." 1>&2
-        exit 1
-    else
-        case $(uname -s) in
-        Darwin) target="darwin-amd64.tar.gz" ;;
-        *) target="linux-amd64.tar.gz" ;;
-        esac
-    fi
-
-    # check if pglet.exe is in PATH already (development mode)
-    if command -v pglet &> /dev/null
-    then
-        PGLET_EXE=`which pglet`
-        return
-    fi
-
-    # check if there is Pglet aready installed
-    local pglet_dir="$HOME/.pglet"
-    local pglet_bin="$pglet_dir/bin"
-    PGLET_EXE="$pglet_bin/pglet"
-
-    local ver="$PGLET_VER"
-    local installed_ver=""
-
-    if [ -f "$PGLET_EXE" ]; then
-        installed_ver=$($PGLET_EXE --version)
-    fi
-
-    #echo "Installed version: $installed_ver"
-
-    if [[ "$installed_ver" != "$ver" ]]; then
-        printf "Installing Pglet v$ver..."
-
-        if [ ! -d "$pglet_bin" ]; then
-            mkdir -p "$pglet_bin"
-        fi
-
-        local pglet_url="https://github.com/pglet/pglet/releases/download/v${ver}/pglet-${target}"
-        local tempTar="$HOME/.pglet/pglet.tar.gz"
-        curl -fsSL $pglet_url -o $tempTar
-        tar zxf $tempTar -C $pglet_bin
-        rm $tempTar
-
-        echo "OK"
-    fi
-}
-
 # Parameters:
 #   $1 - page name
 # Variables:
-#   PGLET_PUBLIC      - makes the page available as public at pglet.io service or a self-hosted Pglet server
+#   PGLET_WEB         - makes the page available as public at pglet.io service or a self-hosted Pglet server
 #   PGLET_PRIVATE     - makes the page available as private at pglet.io service or a self-hosted Pglet server
 #   PGLET_SERVER      - connects to the page on a self-hosted Pglet server
 #   PGLET_TOKEN       - authentication token for pglet.io service or a self-hosted Pglet server
@@ -105,7 +51,7 @@ function pglet_page() {
     echo "Page URL: $PGLET_PAGE_URL"
 }
 
-function pglet_start_session() {
+function __pglet_start_session() {
     echo "Started session: $1"
     PGLET_CONNECTION_ID=$1
     local fn=$2
@@ -158,7 +104,7 @@ function pglet_app() {
             PGLET_PAGE_URL="$session_id"
             echo "Page URL: $PGLET_PAGE_URL"
         else
-            pglet_start_session $session_id $fn &
+            __pglet_start_session $session_id $fn &
         fi
     done < <( $PGLET_EXE "${pargs[@]}" )
 }
@@ -234,4 +180,58 @@ function pglet_dispatch_events() {
   done
 }
 
-pglet_install
+function __pglet_install() {
+    if [ "$(uname -m)" != "x86_64" ]; then
+        echo "Error: Unsupported architecture $(uname -m). Only x64 binaries are available." 1>&2
+        exit 1
+    fi
+
+    if [ "$OS" = "Windows_NT" ]; then
+        echo "Error: Bash for Windows is not supported." 1>&2
+        exit 1
+    else
+        case $(uname -s) in
+        Darwin) target="darwin-amd64.tar.gz" ;;
+        *) target="linux-amd64.tar.gz" ;;
+        esac
+    fi
+
+    # check if pglet.exe is in PATH already (development mode)
+    if command -v pglet &> /dev/null
+    then
+        PGLET_EXE=`which pglet`
+        return
+    fi
+
+    # check if there is Pglet aready installed
+    local pglet_dir="$HOME/.pglet"
+    local pglet_bin="$pglet_dir/bin"
+    PGLET_EXE="$pglet_bin/pglet"
+
+    local ver="$PGLET_VER"
+    local installed_ver=""
+
+    if [ -f "$PGLET_EXE" ]; then
+        installed_ver=$($PGLET_EXE --version)
+    fi
+
+    #echo "Installed version: $installed_ver"
+
+    if [[ "$installed_ver" != "$ver" ]]; then
+        printf "Installing Pglet v$ver..."
+
+        if [ ! -d "$pglet_bin" ]; then
+            mkdir -p "$pglet_bin"
+        fi
+
+        local pglet_url="https://github.com/pglet/pglet/releases/download/v${ver}/pglet-${target}"
+        local tempTar="$HOME/.pglet/pglet.tar.gz"
+        curl -fsSL $pglet_url -o $tempTar
+        tar zxf $tempTar -C $pglet_bin
+        rm $tempTar
+
+        echo "OK"
+    fi
+}
+
+__pglet_install

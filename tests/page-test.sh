@@ -16,15 +16,20 @@ txt1=`pglet_send "add textbox multiline label=Data"`
 pglet_send "addf button id=ok text=OK"
 
 function hello() {
+    echo "PGLET_EVENT_TARGET: $PGLET_EVENT_TARGET"
+    echo "PGLET_EVENT_NAME: $PGLET_EVENT_NAME"
+    echo "PGLET_EVENT_DATA: $PGLET_EVENT_DATA"
+
     r=`pglet_send "get $txt1 value"`
     echo "$r"
-    echo "PGLET_EXE: $PGLET_EXE"
-    echo "PGLET_CONNECTION_ID: $PGLET_CONNECTION_ID"
-    echo "PGLET_PAGE_URL: $PGLET_PAGE_URL"
+    # echo "PGLET_EXE: $PGLET_EXE"
+    # echo "PGLET_CONNECTION_ID: $PGLET_CONNECTION_ID"
+    # echo "PGLET_PAGE_URL: $PGLET_PAGE_URL"
 }
 
 #events=("ok click hello")
 #pglet_dispatch_events "${events[@]}"
+
 
 pglet_dispatch_events "ok click hello"
 
