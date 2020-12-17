@@ -5,45 +5,9 @@ PGLET_VER="0.1.10"        # Minimum version required by this script
 PGLET_EXE=""             # full path to Pglet executable
 PGLET_CONNECTION_ID=""   # the last page connection ID.
 PGLET_PAGE_URL=""        # the last page URL.
-PGLET_LAST_RESULT=""     # the last added control ID.
 PGLET_EVENT_TARGET=""    # the last received event target (control ID).
 PGLET_EVENT_NAME=""      # the last received event name.
 PGLET_EVENT_DATA=""      # the last received event data.
-
-# source: https://stackoverflow.com/a/4025065/1435891
-function vercomp () {
-    if [[ $1 == $2 ]]
-    then
-        echo "eq"
-        return
-    fi
-    local IFS=.
-    local i ver1=($1) ver2=($2)
-    # fill empty fields in ver1 with zeros
-    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
-    do
-        ver1[i]=0
-    done
-    for ((i=0; i<${#ver1[@]}; i++))
-    do
-        if [[ -z ${ver2[i]} ]]
-        then
-            # fill empty fields in ver2 with zeros
-            ver2[i]=0
-        fi
-        if ((10#${ver1[i]} > 10#${ver2[i]}))
-        then
-            echo "gt"
-            return
-        fi
-        if ((10#${ver1[i]} < 10#${ver2[i]}))
-        then
-            echo "lt"
-            return
-        fi
-    done
-    echo "eq"
-}
 
 function pglet_install() {
     if [ "$(uname -m)" != "x86_64" ]; then
@@ -61,9 +25,16 @@ function pglet_install() {
         esac
     fi
 
+    # check if pglet.exe is in PATH already (development mode)
+    if command -v pglet &> /dev/null
+    then
+        PGLET_EXE=`which pglet`
+        return
+    fi
+
     # check if there is Pglet aready installed
-    pglet_dir="$HOME/.pglet"
-    pglet_bin="$pglet_dir/bin"
+    local pglet_dir="$HOME/.pglet"
+    local pglet_bin="$pglet_dir/bin"
     PGLET_EXE="$pglet_bin/pglet"
 
     local ver="$PGLET_VER"
@@ -75,10 +46,7 @@ function pglet_install() {
 
     #echo "Installed version: $installed_ver"
 
-    # compare required and installed versions
-    local vc=`vercomp "$installed_ver" "$ver"`
-
-    if [[ "$installed_ver" == "" ]] || [[ "$vc" == "lt" ]]; then
+    if [[ "$installed_ver" != "$ver" ]]; then
         printf "Installing Pglet v$ver..."
 
         if [ ! -d "$pglet_bin" ]; then

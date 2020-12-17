@@ -11,13 +11,16 @@ PGLET_NO_WINDOW=true pglet_page "index"
 #echo "$PGLET_CONNECTION_ID"
 
 pglet_send "cleanf"
-pglet_send "addf text value='Hello world' size=large"
+pglet_send "addf text value='Hello world' size=xxLarge"
 txt1=`pglet_send "add textbox multiline label=Data"`
 pglet_send "addf button id=ok text=OK"
 
 function hello() {
-    pglet_send "get $txt1 value"
-    echo "Hello!"
+    r=`pglet_send "get $txt1 value"`
+    echo "$r"
+    echo "PGLET_EXE: $PGLET_EXE"
+    echo "PGLET_CONNECTION_ID: $PGLET_CONNECTION_ID"
+    echo "PGLET_PAGE_URL: $PGLET_PAGE_URL"
 }
 
 #events=("ok click hello")
