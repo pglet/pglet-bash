@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 set -e
@@ -6,16 +6,21 @@ set -e
 # include Pglet library
 . $DIR/../pglet.sh
 
-PGLET_PUBLIC=false pglet_page
+PGLET_NO_WINDOW=true pglet_page "index"
 
 #echo "$PGLET_CONNECTION_ID"
 
+pglet_send "clean"
+pglet_send "add text value='Hello world' size=large"
+txt1=`pglet_send "add textbox multiline label=Data"`
+pglet_send "add button id=ok text=OK"
+
+echo "$txt1"
+
 function hello() {
+    pglet_send "get $txt1 value"
     echo "Hello!"
 }
-
-pglet_send "add text value='Hello, world!'"
-pglet_send "add button id=ok text=OK"
 
 #events=("ok click hello")
 #pglet_dispatch_events "${events[@]}"

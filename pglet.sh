@@ -1,5 +1,5 @@
 # Constants
-PGLET_VER="0.1.5"        # Minimum version required by this script
+PGLET_VER="0.1.10"        # Minimum version required by this script
 
 # Default session variables:
 PGLET_EXE=""             # full path to Pglet executable
@@ -110,8 +110,8 @@ function pglet_page() {
         pargs+=($1)
     fi
 
-    if [[ "$PGLET_PUBLIC" == "true" ]]; then
-        pargs+=(--public)
+    if [[ "$PGLET_WEB" == "true" ]]; then
+        pargs+=(--web)
     fi
 
     if [[ "$PGLET_PRIVATE" == "true" ]]; then
@@ -124,6 +124,10 @@ function pglet_page() {
 
     if [[ "$PGLET_TOKEN" != "" ]]; then
         pargs+=(--token $PGLET_TOKEN)
+    fi
+
+    if [[ "$PGLET_NO_WINDOW" != "" ]]; then
+        pargs+=(--no-window)
     fi
 
     # execute pglet and get page connection ID
@@ -156,8 +160,8 @@ function pglet_app() {
         exit 1
     fi
 
-    if [[ "$PGLET_PUBLIC" == "true" ]]; then
-        pargs+=(--public)
+    if [[ "$PGLET_WEB" == "true" ]]; then
+        pargs+=(--web)
     fi
 
     if [[ "$PGLET_PRIVATE" == "true" ]]; then
@@ -170,6 +174,10 @@ function pglet_app() {
 
     if [[ "$PGLET_TOKEN" != "" ]]; then
         pargs+=(--token $PGLET_TOKEN)
+    fi
+
+    if [[ "$PGLET_NO_WINDOW" != "" ]]; then
+        pargs+=(--no-window)
     fi
 
     # reset vars
@@ -203,11 +211,22 @@ function pglet_send() {
     echo "$cmd" > "$conn_id"
 
     # read result
-    IFS=' ' read result_status result_value < "$conn_id"
-    if [[ "$result_status" == "error" ]]; then
-        echo "Error: $result_value"
-        exit 2
-    fi
+    local firstLine="true"
+    local result_value=""
+    IFS=''
+    while read -r line; do
+        if [[ $firstLine == "true" ]]; then
+            IFS=' ' read -r result_status result_value <<< "$line"
+            firstLine="false"
+            if [[ "$result_status" == "error" ]]; then
+                echo "Error: $result_value"
+                exit 2
+            fi
+        else
+            result_value="$line"
+        fi
+        echo "$result_value"
+    done <"$conn_id"
 }
 
 function pglet_wait_event() {
