@@ -98,15 +98,18 @@ function pglet_app() {
     PGLET_PAGE_URL=""
 
     # execute pglet
-    while read -r session_id
-    do
-        if [[ "$PGLET_PAGE_URL" == "" ]]; then
-            PGLET_PAGE_URL="$session_id"
-            echo "Page URL: $PGLET_PAGE_URL"
-        else
-            __pglet_start_session $session_id $fn &
-        fi
-    done < <( $PGLET_EXE "${pargs[@]}" )
+    $PGLET_EXE "${pargs[@]}" |
+    {
+        while read -r session_id
+        do
+            if [[ "$PGLET_PAGE_URL" == "" ]]; then
+                PGLET_PAGE_URL="$session_id"
+                echo "Page URL: $PGLET_PAGE_URL"
+            else
+                __pglet_start_session $session_id $fn &
+            fi
+        done
+    }
 }
 
 function pglet_send() {
