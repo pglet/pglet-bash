@@ -10,18 +10,20 @@ PGLET_NO_WINDOW=true pglet_page "index"
 
 #echo "$PGLET_CONNECTION_ID"
 
-pglet_send "cleanf"
-pglet_send "addf text value='Hello world' size=xxLarge"
+pglet_clean
+pglet_add "text value='Hello world' size=xxLarge"
 txt1=`pglet_send "add textbox multiline label=Data"`
-pglet_send "addf button id=ok text=OK"
+pglet_addf "button id=ok text=OK"
 
 function hello() {
     echo "PGLET_EVENT_TARGET: $PGLET_EVENT_TARGET"
     echo "PGLET_EVENT_NAME: $PGLET_EVENT_NAME"
     echo "PGLET_EVENT_DATA: $PGLET_EVENT_DATA"
 
-    r=`pglet_send "get $txt1 value"`
-    echo "$r"
+    r=`pglet_get_value $txt1`
+    echo "value: $r"
+
+    pglet_remove "at=0"
     # echo "PGLET_EXE: $PGLET_EXE"
     # echo "PGLET_CONNECTION_ID: $PGLET_CONNECTION_ID"
     # echo "PGLET_PAGE_URL: $PGLET_PAGE_URL"

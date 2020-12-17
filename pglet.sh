@@ -151,6 +151,58 @@ function pglet_send() {
     done <"$conn_id"
 }
 
+function pglet_add() {
+    pglet_send "add $1"
+}
+
+function pglet_addf() {
+    pglet_send "addf $1"
+}
+
+function pglet_set() {
+    pglet_send "set $1"
+}
+
+function pglet_setf() {
+    pglet_send "setf $1"
+}
+
+function pglet_set_value() {
+    pglet_send "set $1 value=\"${2//\"/\\\"}\""
+}
+
+function pglet_set_valuef() {
+    pglet_send "setf $1 value=\"${2//\"/\\\"}\""
+}
+
+function pglet_get_value() {
+    pglet_send "get $1 value"
+}
+
+function pglet_show() {
+    pglet_send "set $1 visible=true"
+}
+
+function pglet_hide() {
+    pglet_send "set $1 visible=false"
+}
+
+function pglet_enable() {
+    pglet_send "set $1 enabled=true"
+}
+
+function pglet_disable() {
+    pglet_send "set $1 enabled=false"
+}
+
+function pglet_clean() {
+    pglet_send "clean $1"
+}
+
+function pglet_remove() {
+    pglet_send "remove $1"
+}
+
 function pglet_wait_event() {
     if [[ "$1" != "" ]]; then
         local conn_id=$1
