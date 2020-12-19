@@ -28,10 +28,6 @@ function pglet_page() {
         pargs+=(--web)
     fi
 
-    if [[ "$PGLET_PRIVATE" == "true" ]]; then
-        pargs+=(--private)
-    fi
-
     if [[ "$PGLET_SERVER" != "" ]]; then
         pargs+=(--server $PGLET_SERVER)
     fi
@@ -76,10 +72,6 @@ function pglet_app() {
 
     if [[ "$PGLET_WEB" == "true" ]]; then
         pargs+=(--web)
-    fi
-
-    if [[ "$PGLET_PRIVATE" == "true" ]]; then
-        pargs+=(--private)
     fi
 
     if [[ "$PGLET_SERVER" != "" ]]; then
