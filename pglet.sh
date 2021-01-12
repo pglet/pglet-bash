@@ -202,7 +202,7 @@ function pglet_wait_event() {
         local conn_id=$PGLET_CONNECTION_ID
     fi
 
-    read PGLET_EVENT_TARGET PGLET_EVENT_NAME PGLET_EVENT_DATA < "$conn_id.events"
+    IFS=' ' read PGLET_EVENT_TARGET PGLET_EVENT_NAME PGLET_EVENT_DATA < "$conn_id.events"
 }
 
 function pglet_dispatch_events() {
