@@ -120,7 +120,7 @@ function pglet_send() {
     echo "$cmd" > "$conn_id"
 
     # take result if command doesn't end with "f" (fire-and-forget)
-    if [[ "$cmd" =~ \s*\w*f ]]; then
+    if [[ "$cmd" =~ ^[[:space:]]*[A-Za-z]+f ]]; then
         return
     fi
 
