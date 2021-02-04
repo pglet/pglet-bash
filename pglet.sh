@@ -257,7 +257,7 @@ function __pglet_install() {
         arch="amd64"
     elif [[ $arch == arm64 ]] || [[ $arch == aarch64 ]]; then
         arch="arm64"
-    elif [[ $arch == arm ]] || [[ $arch == armv7l ]]; then
+    elif [[ $arch == arm* ]]; then
         arch="arm"
     else
         echo "Error: Unsupported architecture $arch." 1>&2
