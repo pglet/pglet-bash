@@ -348,9 +348,13 @@ function __pglet_install() {
 
         local pglet_url="https://github.com/pglet/pglet/releases/download/v${ver}/pglet-${ver}-${platform}-${arch}.tar.gz"
         local tempTar="/tmp/pglet.tar.gz"
-        curl -fsSL $pglet_url -o $tempTar &&
-        tar -zxf $tempTar -C "$pglet_dir" pglet ||
-          { echo "Error downloading and extracting pglet executable." 1>&2; exit 1; }
+        {
+            curl -fsSL $pglet_url -o $tempTar &&
+                tar -zxf $tempTar -C "$pglet_dir" pglet
+        } || {
+            echo "Error downloading and extracting pglet executable." 1>&2
+            exit 1
+        }
         rm $tempTar
 
         printf "OK\n"
