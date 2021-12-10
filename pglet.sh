@@ -25,27 +25,27 @@ PGLET_EVENT_DATA=""      # the last received event data.
 function pglet_page() {
     local pargs=(page)
 
-    if [[ "$1" != "" ]]; then
+    if [[ $# -ne 0 && "$1" != "" ]]; then
         pargs+=("$1")
     fi
 
-    if [[ "$PGLET_LOCAL" == "true" ]]; then
+    if [[ -v PGLET_LOCAL && "$PGLET_LOCAL" == "true" ]]; then
         pargs+=(--local)
     fi
 
-    if [[ "$PGLET_SERVER" != "" ]]; then
+    if [[ -v PGLET_SERVER && "$PGLET_SERVER" != "" ]]; then
         pargs+=(--server "$PGLET_SERVER")
     fi
 
-    if [[ "$PGLET_TOKEN" != "" ]]; then
+    if [[ -v PGLET_TOKEN && "$PGLET_TOKEN" != "" ]]; then
         pargs+=(--token "$PGLET_TOKEN")
     fi
 
-    if [[ "$PGLET_NO_WINDOW" != "" ]]; then
+    if [[ -v PGLET_NO_WINDOW && "$PGLET_NO_WINDOW" != "" ]]; then
         pargs+=(--no-window)
     fi
 
-    if [[ "$PGLET_TICKER" != "" ]]; then
+    if [[ -v PGLET_TICKER && "$PGLET_TICKER" != "" ]]; then
         pargs+=(--ticker "$PGLET_TICKER")
     fi    
 
@@ -80,23 +80,23 @@ function pglet_app() {
         exit 1
     fi
 
-    if [[ "$PGLET_LOCAL" == "true" ]]; then
+    if [[ -v PGLET_LOCAL && "$PGLET_LOCAL" == "true" ]]; then
         pargs+=(--local)
     fi
 
-    if [[ "$PGLET_SERVER" != "" ]]; then
+    if [[ -v PGLET_SERVER && "$PGLET_SERVER" != "" ]]; then
         pargs+=(--server "$PGLET_SERVER")
     fi
 
-    if [[ "$PGLET_TOKEN" != "" ]]; then
+    if [[ -v PGLET_TOKEN && "$PGLET_TOKEN" != "" ]]; then
         pargs+=(--token "$PGLET_TOKEN")
     fi
 
-    if [[ "$PGLET_NO_WINDOW" != "" ]]; then
+    if [[ -v PGLET_NO_WINDOW && "$PGLET_NO_WINDOW" != "" ]]; then
         pargs+=(--no-window)
     fi
 
-    if [[ "$PGLET_TICKER" != "" ]]; then
+    if [[ -v PGLET_TICKER && "$PGLET_TICKER" != "" ]]; then
         pargs+=(--ticker "$PGLET_TICKER")
     fi    
 
@@ -211,7 +211,7 @@ function pglet_remove() {
 
 # shellcheck disable=SC2120
 function pglet_wait_event() {
-    if [[ "$1" != "" ]]; then
+    if [[ $# -ne 0 && "$1" != "" ]]; then
         local conn_id=$1
     else
         local conn_id=$PGLET_CONNECTION_ID
@@ -281,7 +281,7 @@ function escape_dq_cmd() {
 
 function __pglet_install() {
 
-    if [ "$OS" = "Windows_NT" ]; then
+    if [[ -v OS && "$OS" = "Windows_NT" ]]; then
         echo "Error: Bash for Windows is not supported." 1>&2
         exit 1
     fi
