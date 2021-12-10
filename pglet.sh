@@ -50,7 +50,7 @@ function pglet_page() {
 
     # execute pglet and get page connection ID
     local page_results
-    page_results=`$PGLET_EXE "${pargs[@]}"`
+    page_results=$($PGLET_EXE "${pargs[@]}")
     IFS=' ' read -r PGLET_CONNECTION_ID PGLET_PAGE_URL <<< "$page_results"
 
     echo "Page URL: $PGLET_PAGE_URL"
@@ -261,7 +261,7 @@ function escape_sq_cmd() {
   local CR="
 "
   local result
-  result=`"$@"`
+  result=$("$@")
   local r1="${result//${CR}/\\\n}"
   echo "${r1//\'/\\\'}" # escape single quotes
 }
@@ -271,7 +271,7 @@ function escape_dq_cmd() {
   local CR="
 "
   local result
-  result=`"$@"`
+  result=$("$@")
   local r1="${result//${CR}/\\\n}"
   echo "${r1//\"/\\\"}" # escape double quotes
 }
@@ -309,7 +309,7 @@ function __pglet_install() {
     local current_pglet_dir=""
     if command -v pglet &> /dev/null
     then
-        PGLET_EXE=`which pglet`
+        PGLET_EXE=$(which pglet)
         current_pglet_dir="$(dirname "${PGLET_EXE}")"
     fi
 
