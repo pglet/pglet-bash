@@ -49,7 +49,8 @@ function pglet_page() {
     fi    
 
     # execute pglet and get page connection ID
-    local page_results=`$PGLET_EXE "${pargs[@]}"`
+    local page_results
+    page_results=`$PGLET_EXE "${pargs[@]}"`
     IFS=' ' read -r PGLET_CONNECTION_ID PGLET_PAGE_URL <<< "$page_results"
 
     echo "Page URL: $PGLET_PAGE_URL"
@@ -259,7 +260,8 @@ function escape_dq_str() {
 function escape_sq_cmd() {
   local CR="
 "
-  local result=`"$@"`
+  local result
+  result=`"$@"`
   local r1="${result//${CR}/\\\n}"
   echo "${r1//\'/\\\'}" # escape single quotes
 }
@@ -268,7 +270,8 @@ function escape_sq_cmd() {
 function escape_dq_cmd() {
   local CR="
 "
-  local result=`"$@"`
+  local result
+  result=`"$@"`
   local r1="${result//${CR}/\\\n}"
   echo "${r1//\"/\\\"}" # escape double quotes
 }
