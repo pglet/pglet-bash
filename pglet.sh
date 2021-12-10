@@ -208,6 +208,7 @@ function pglet_remove() {
     pglet_send "remove $1"
 }
 
+# shellcheck disable=SC2120
 function pglet_wait_event() {
     if [[ "$1" != "" ]]; then
         local conn_id=$1
@@ -215,6 +216,7 @@ function pglet_wait_event() {
         local conn_id=$PGLET_CONNECTION_ID
     fi
 
+    # shellcheck disable=SC2034
     IFS=' ' read -r PGLET_EVENT_TARGET PGLET_EVENT_NAME PGLET_EVENT_DATA < "$conn_id.events"
 }
 
