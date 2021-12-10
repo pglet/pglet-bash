@@ -340,7 +340,7 @@ function __pglet_install() {
 
         pkill pglet
 
-        printf "Installing Pglet v$ver to $pglet_dir..."
+        printf "Installing Pglet v%s to %s..." "$ver" "$pglet_dir"
 
         if [ ! -d "$pglet_dir" ]; then
             mkdir -p "$pglet_dir"
