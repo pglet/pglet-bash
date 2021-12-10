@@ -25,7 +25,7 @@ function pglet_page() {
     local pargs=(page)
 
     if [[ "$1" != "" ]]; then
-        pargs+=($1)
+        pargs+=("$1")
     fi
 
     if [[ "$PGLET_LOCAL" == "true" ]]; then
@@ -33,11 +33,11 @@ function pglet_page() {
     fi
 
     if [[ "$PGLET_SERVER" != "" ]]; then
-        pargs+=(--server $PGLET_SERVER)
+        pargs+=(--server "$PGLET_SERVER")
     fi
 
     if [[ "$PGLET_TOKEN" != "" ]]; then
-        pargs+=(--token $PGLET_TOKEN)
+        pargs+=(--token "$PGLET_TOKEN")
     fi
 
     if [[ "$PGLET_NO_WINDOW" != "" ]]; then
@@ -45,7 +45,7 @@ function pglet_page() {
     fi
 
     if [[ "$PGLET_TICKER" != "" ]]; then
-        pargs+=(--ticker $PGLET_TICKER)
+        pargs+=(--ticker "$PGLET_TICKER")
     fi    
 
     # execute pglet and get page connection ID
@@ -71,7 +71,7 @@ function pglet_app() {
         local fn=$1
     elif [[ $# -eq 2 ]]; then
         # page name and hander function specified
-        pargs+=($1)
+        pargs+=("$1")
         local fn=$2
     else
         echo "Error: wrong number of arguments"
@@ -83,11 +83,11 @@ function pglet_app() {
     fi
 
     if [[ "$PGLET_SERVER" != "" ]]; then
-        pargs+=(--server $PGLET_SERVER)
+        pargs+=(--server "$PGLET_SERVER")
     fi
 
     if [[ "$PGLET_TOKEN" != "" ]]; then
-        pargs+=(--token $PGLET_TOKEN)
+        pargs+=(--token "$PGLET_TOKEN")
     fi
 
     if [[ "$PGLET_NO_WINDOW" != "" ]]; then
@@ -95,7 +95,7 @@ function pglet_app() {
     fi
 
     if [[ "$PGLET_TICKER" != "" ]]; then
-        pargs+=(--ticker $PGLET_TICKER)
+        pargs+=(--ticker "$PGLET_TICKER")
     fi    
 
     # reset vars
@@ -110,7 +110,7 @@ function pglet_app() {
                 PGLET_PAGE_URL="$session_id"
                 echo "Page URL: $PGLET_PAGE_URL"
             else
-                __pglet_start_session $session_id $fn &
+                __pglet_start_session "$session_id" "$fn" &
             fi
         done
     }
@@ -244,7 +244,7 @@ function escape_sq_str() {
   local CR="
 "
   local r1="${1//${CR}/\\\n}"
-  echo ${r1//\'/\\\'}
+  echo "${r1//\'/\\\'}"
 }
 
 # escape new lines and double quotes
@@ -252,25 +252,25 @@ function escape_dq_str() {
   local CR="
 "
   local r1="${1//${CR}/\\\n}"
-  echo ${r1//\"/\\\"} # escape double quotes
+  echo "${r1//\"/\\\"}" # escape double quotes
 }
 
 # execute command and escape new lines and single quotes
 function escape_sq_cmd() {
   local CR="
 "
-  local result=`$@`
+  local result=`"$@"`
   local r1="${result//${CR}/\\\n}"
-  echo ${r1//\'/\\\'} # escape single quotes
+  echo "${r1//\'/\\\'}" # escape single quotes
 }
 
 # execute command and escape new lines and double quotes
 function escape_dq_cmd() {
   local CR="
 "
-  local result=`$@`
+  local result=`"$@"`
   local r1="${result//${CR}/\\\n}"
-  echo ${r1//\"/\\\"} # escape double quotes
+  echo "${r1//\"/\\\"}" # escape double quotes
 }
 
 function __pglet_install() {
@@ -343,7 +343,7 @@ function __pglet_install() {
         local pglet_url="https://github.com/pglet/pglet/releases/download/v${ver}/pglet-${ver}-${platform}-${arch}.tar.gz"
         local tempTar="/tmp/pglet.tar.gz"
         curl -fsSL $pglet_url -o $tempTar &&
-        tar -zxf $tempTar -C $pglet_dir pglet ||
+        tar -zxf $tempTar -C "$pglet_dir" pglet ||
           { echo "Error downloading and extracting pglet executable." 1>&2; exit 1; }
         rm $tempTar
 
