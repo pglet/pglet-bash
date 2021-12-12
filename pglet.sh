@@ -29,23 +29,23 @@ function pglet_page() {
         pargs+=("$1")
     fi
 
-    if [[ -v PGLET_LOCAL && "$PGLET_LOCAL" == "true" ]]; then
-        pargs+=(--local)
+    if [[ -n "${PGLET_WEB-}" && "$PGLET_WEB" == "true" ]]; then
+        pargs+=(--web)
     fi
 
-    if [[ -v PGLET_SERVER && "$PGLET_SERVER" != "" ]]; then
+    if [[ -n "${PGLET_SERVER-}" && "$PGLET_SERVER" != "" ]]; then
         pargs+=(--server "$PGLET_SERVER")
     fi
 
-    if [[ -v PGLET_TOKEN && "$PGLET_TOKEN" != "" ]]; then
+    if [[ -n "${PGLET_TOKEN-}" && "$PGLET_TOKEN" != "" ]]; then
         pargs+=(--token "$PGLET_TOKEN")
     fi
 
-    if [[ -v PGLET_NO_WINDOW && "$PGLET_NO_WINDOW" != "" ]]; then
+    if [[ -n "${PGLET_NO_WINDOW-}" && "$PGLET_NO_WINDOW" != "" ]]; then
         pargs+=(--no-window)
     fi
 
-    if [[ -v PGLET_TICKER && "$PGLET_TICKER" != "" ]]; then
+    if [[ -n "${PGLET_TICKER-}" && "$PGLET_TICKER" != "" ]]; then
         pargs+=(--ticker "$PGLET_TICKER")
     fi    
 
@@ -80,23 +80,23 @@ function pglet_app() {
         exit 1
     fi
 
-    if [[ -v PGLET_LOCAL && "$PGLET_LOCAL" == "true" ]]; then
-        pargs+=(--local)
+    if [[ -n "${PGLET_WEB-}" && "$PGLET_WEB" == "true" ]]; then
+        pargs+=(--web)
     fi
 
-    if [[ -v PGLET_SERVER && "$PGLET_SERVER" != "" ]]; then
+    if [[ -n "${PGLET_SERVER-}" && "$PGLET_SERVER" != "" ]]; then
         pargs+=(--server "$PGLET_SERVER")
     fi
 
-    if [[ -v PGLET_TOKEN && "$PGLET_TOKEN" != "" ]]; then
+    if [[ -n "${PGLET_TOKEN-}" && "$PGLET_TOKEN" != "" ]]; then
         pargs+=(--token "$PGLET_TOKEN")
     fi
 
-    if [[ -v PGLET_NO_WINDOW && "$PGLET_NO_WINDOW" != "" ]]; then
+    if [[ -n "${PGLET_NO_WINDOW-}" && "$PGLET_NO_WINDOW" != "" ]]; then
         pargs+=(--no-window)
     fi
 
-    if [[ -v PGLET_TICKER && "$PGLET_TICKER" != "" ]]; then
+    if [[ -n "${PGLET_TICKER-}" && "$PGLET_TICKER" != "" ]]; then
         pargs+=(--ticker "$PGLET_TICKER")
     fi    
 
@@ -281,7 +281,7 @@ function escape_dq_cmd() {
 
 function __pglet_install() {
 
-    if [[ -v OS && "$OS" = "Windows_NT" ]]; then
+    if [[ -n "${OS-}" && "$OS" = "Windows_NT" ]]; then
         echo "Error: Bash for Windows is not supported." 1>&2
         exit 1
     fi
@@ -336,7 +336,7 @@ function __pglet_install() {
 
     #echo "Installed version: $installed_ver"
 
-    if [[ "$installed_ver" != "$ver" ]]; then
+    if [[ "$installed_ver" != "unknown" && "$installed_ver" != "$ver" ]]; then
 
         pkill pglet
 
