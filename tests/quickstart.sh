@@ -6,7 +6,7 @@ set -e
 # include Pglet library
 . $DIR/../pglet.sh
 
-PGLET_WEB=false pglet_page
+PGLET_WEB=true pglet_page
 
 pglet_clean
 pglet_add "text value='Hello, world!'"
