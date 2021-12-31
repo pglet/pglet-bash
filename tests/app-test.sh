@@ -17,4 +17,4 @@ function main() {
     pglet_dispatch_events "ok click hello"
 }
 
-pglet_app "app1" "main"
+pglet_app "app2" "main"
